@@ -13,6 +13,8 @@ const textData = fs.readFileSync(filePath, 'utf8')
 
 var transporter = nodemailer.createTransport({
   service: 'gmail',
+  secure: true,
+  port: 465,
   auth: {
     user: 'kartikaysaxena12@gmail.com',
     pass: 'stdswtkaasyoonpq'
@@ -37,6 +39,8 @@ async function main() {
     var json = await data.json();
     console.log(json)
     json.forEach(item => {
+        
+
         mailOptions.text = textData
         mailOptions.to = item.email;
         console.log(item.email)
@@ -46,19 +50,35 @@ async function main() {
         } else if(item.isMale===1) {
             mailOptions.text = "Dear Sir" + mailOptions.text.split('$')[0] + item.company + mailOptions.text.split('$')[1]; 
         }
-        transporter.sendMail(mailOptions, function(error, info){
+        transporter.sendMail(mailOptions,async function(error, info){
             if (error) {
               console.log(error);
             } else {
+              var sentMail = {}
+              sentMail.company = item.company
+              sentMail.email = item.email
               console.log('Email sent: ' + info.response);
+              try {
+                const updateSentEmails = await fetch("https://script.google.com/macros/s/AKfycbz3eR18bmbL47z-7cEhQI5eSgSepOkGJ-yauDtqsxbuVlqRaYk4LVDrbr1gwivXj-JcpA/exec",{
+                    method: 'POST',
+                    body: JSON.stringify(sentMail)
+                  })
+                  const responseData = await response.text();
+                  console.log(responseData);
+              }
+              catch {
+                console.log('err')
+              }
             }
           });
     })
 }
-app.get('/',async (req,res)=> {
+app.get('/api',async (req,res) => {
     await main();
-    res.send('hello');
+    res.send('Process started')
 })
-app.listen(3000, () => {
-    console.log(`Server running at http://localhost:${port}/`);
-  });
+app.listen(3000,() => {
+    console.log('listening');
+})
+
+module.exports = app;
