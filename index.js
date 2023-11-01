@@ -1,7 +1,7 @@
 var nodemailer = require('nodemailer');
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 3001;
 
 
 
@@ -63,7 +63,7 @@ async function main() {
                     method: 'POST',
                     body: JSON.stringify(sentMail)
                   })
-                  const responseData = await response.text();
+                  const responseData = await updateSentEmails.text();
                   console.log(responseData);
               }
               catch {
@@ -73,12 +73,6 @@ async function main() {
           });
     })
 }
-app.get('/api',async (req,res) => {
-    await main();
-    res.send('Process started')
-})
-app.listen(3000,() => {
-    console.log('listening');
-})
+main();
 
 module.exports = app;
