@@ -1,2 +1,6 @@
 node_modules/
 node_modules
+spare.js
+intern-find-next/
+intern-find-next/my-app
+.env
